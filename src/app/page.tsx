@@ -46,24 +46,29 @@ export default function Home() {
           </p>
         </div>
 
-        <form onSubmit={handleSearch} className="flex flex-col gap-3 rounded-lg border border-stone-200 bg-white p-4 shadow-sm sm:flex-row">
-          <label className="sr-only" htmlFor="word">
-            English word
-          </label>
-          <input
-            id="word"
-            value={word}
-            onChange={(event) => setWord(event.target.value)}
-            placeholder="Search an English word..."
-            className="min-h-12 flex-1 rounded-md border border-stone-300 px-4 text-base outline-none focus:border-teal-600 focus:ring-2 focus:ring-teal-100"
-          />
-          <button
-            type="submit"
-            disabled={loading || !word.trim()}
-            className="min-h-12 rounded-md bg-teal-700 px-5 font-bold text-white transition hover:bg-teal-800 disabled:cursor-not-allowed disabled:bg-stone-300"
-          >
-            {loading ? "Searching..." : "Search"}
-          </button>
+        <form onSubmit={handleSearch} className="rounded-lg border border-stone-200 bg-white p-4 shadow-sm">
+          <div className="flex flex-col gap-3 sm:flex-row">
+            <label className="sr-only" htmlFor="word">
+              English word
+            </label>
+            <input
+              id="word"
+              value={word}
+              onChange={(event) => setWord(event.target.value)}
+              placeholder="Search a word or short phrase..."
+              className="min-h-12 flex-1 rounded-md border border-stone-300 px-4 text-base outline-none focus:border-teal-600 focus:ring-2 focus:ring-teal-100"
+            />
+            <button
+              type="submit"
+              disabled={loading || !word.trim()}
+              className="min-h-12 rounded-md bg-teal-700 px-5 font-bold text-white transition hover:bg-teal-800 disabled:cursor-not-allowed disabled:bg-stone-300"
+            >
+              {loading ? "Searching..." : "Search"}
+            </button>
+          </div>
+          <p className="mt-3 text-sm text-stone-600">
+            Try one word, like &apos;cat&apos;, or a short phrase, like &apos;ice cream&apos;.
+          </p>
         </form>
 
         {error && <p className="rounded-md border border-red-200 bg-red-50 p-3 font-semibold text-red-700">{error}</p>}
