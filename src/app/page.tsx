@@ -22,7 +22,12 @@ export default function Home() {
       setResult(savedWord);
       setWord("");
     } catch (caughtError) {
-      setError(caughtError instanceof Error ? caughtError.message : "Search failed.");
+      const message = caughtError instanceof Error ? caughtError.message : "Search failed.";
+      if (message.includes("reliable picture")) {
+        setError("We could not create a reliable picture for this word yet. Please try again.");
+      } else {
+        setError(message);
+      }
     } finally {
       setLoading(false);
     }
