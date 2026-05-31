@@ -1,17 +1,35 @@
 export type LearningStatus = "new" | "learning" | "mastered";
+export type ImageStatus = "pending" | "generated" | "failed";
+
+export type GlobalWord = {
+  id: number;
+  normalized_word: string;
+  display_word: string;
+  simple_definition: string;
+  example_sentence: string;
+  image_url: string | null;
+  image_public_id: string | null;
+  image_status: ImageStatus;
+  image_prompt: string;
+  image_style_version: string;
+  created_at: string;
+  updated_at: string;
+};
 
 export type WordLookup = {
   id: number;
   word: string;
   simple_definition: string;
   example_sentence: string;
-  image_url: string;
+  image_url: string | null;
   lookup_count: number;
   learning_status: LearningStatus;
   lookup_day_id: number;
+  global_word_id: number;
   lookup_date: string;
   first_searched_at: string;
   last_searched_at: string;
+  global_word: GlobalWord;
 };
 
 export type CalendarDay = {
@@ -72,7 +90,7 @@ export function getWord(id: string) {
   return request<WordLookup>(`/words/${id}`, { cache: "no-store" });
 }
 
-export function updateWord(id: string, payload: Pick<WordLookup, "simple_definition" | "example_sentence" | "image_url" | "learning_status">) {
+export function updateWord(id: string, payload: Pick<WordLookup, "simple_definition" | "example_sentence" | "learning_status">) {
   return request<WordLookup>(`/words/${id}`, {
     method: "PUT",
     body: JSON.stringify(payload),

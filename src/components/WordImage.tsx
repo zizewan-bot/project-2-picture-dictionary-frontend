@@ -4,7 +4,7 @@
 import { useState } from "react";
 
 type WordImageProps = {
-  src: string;
+  src?: string | null;
   word: string;
   className?: string;
 };
@@ -15,10 +15,12 @@ export function WordImage({ src, word, className = "" }: WordImageProps) {
 
   return (
     <img
-      src={failed ? fallback : src}
+      src={failed || !src ? fallback : src}
       alt={`Visual explanation for ${word}`}
+      width={512}
+      height={384}
       onError={() => setFailed(true)}
-      className={`h-full w-full object-cover ${className}`}
+      className={`aspect-[4/3] h-full w-full object-cover ${className}`}
     />
   );
 }

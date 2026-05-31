@@ -8,9 +8,9 @@ export function WordCard({ word }: { word: WordLookup }) {
   return (
     <Link
       href={`/words/${word.id}`}
-      className="group grid overflow-hidden rounded-lg border border-stone-200 bg-white shadow-sm transition hover:-translate-y-0.5 hover:shadow-md sm:grid-cols-[180px_1fr]"
+      className="group grid overflow-hidden rounded-lg border border-stone-200 bg-white shadow-sm transition hover:-translate-y-0.5 hover:shadow-md sm:grid-cols-[192px_1fr]"
     >
-      <div className="aspect-[3/2] bg-stone-100 sm:aspect-auto">
+      <div className="aspect-[4/3] bg-stone-100">
         <WordImage src={word.image_url} word={word.word} />
       </div>
       <div className="space-y-3 p-4">

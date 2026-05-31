@@ -33,10 +33,10 @@ export default function Home() {
         <div className="space-y-3">
           <p className="text-sm font-bold uppercase tracking-wide text-teal-700">Mini Project 2</p>
           <h1 className="max-w-3xl text-4xl font-black text-stone-950 sm:text-5xl">
-            Search an English word and save it to your lookup notebook.
+            Search an English word and save it to the global AI picture library.
           </h1>
           <p className="max-w-2xl text-lg leading-8 text-stone-700">
-            Every search creates or updates today&apos;s visual word record. Repeated searches for the same word increase the lookup count.
+            New words get one shared AI-generated image in cloud storage. Repeated searches reuse that image and increase today&apos;s lookup count.
           </p>
         </div>
 
@@ -71,7 +71,7 @@ export default function Home() {
 
       {result && (
         <aside className="overflow-hidden rounded-lg border border-stone-200 bg-white shadow-sm">
-          <div className="aspect-[3/2] bg-stone-100">
+          <div className="aspect-[4/3] bg-stone-100">
             <WordImage src={result.image_url} word={result.word} />
           </div>
           <div className="space-y-4 p-5">

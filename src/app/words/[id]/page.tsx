@@ -14,7 +14,6 @@ export default function WordDetailPage() {
   const [form, setForm] = useState({
     simple_definition: "",
     example_sentence: "",
-    image_url: "",
     learning_status: "new" as LearningStatus,
   });
   const [loading, setLoading] = useState(true);
@@ -30,7 +29,6 @@ export default function WordDetailPage() {
         setForm({
           simple_definition: loadedWord.simple_definition,
           example_sentence: loadedWord.example_sentence,
-          image_url: loadedWord.image_url,
           learning_status: loadedWord.learning_status,
         });
       })
@@ -78,8 +76,8 @@ export default function WordDetailPage() {
   return (
     <section className="grid gap-6 lg:grid-cols-[380px_1fr]">
       <aside className="overflow-hidden rounded-lg border border-stone-200 bg-white shadow-sm">
-        <div className="aspect-[3/2] bg-stone-100">
-          <WordImage src={form.image_url} word={word.word} />
+        <div className="aspect-[4/3] bg-stone-100">
+          <WordImage src={word.image_url} word={word.word} />
         </div>
         <div className="space-y-4 p-5">
           <div className="flex items-center justify-between gap-3">
@@ -129,15 +127,6 @@ export default function WordDetailPage() {
             value={form.example_sentence}
             onChange={(event) => setForm({ ...form, example_sentence: event.target.value })}
             className="min-h-24 rounded-md border border-stone-300 p-3 font-normal outline-none focus:border-teal-600 focus:ring-2 focus:ring-teal-100"
-          />
-        </label>
-
-        <label className="grid gap-2 font-bold">
-          Image URL
-          <input
-            value={form.image_url}
-            onChange={(event) => setForm({ ...form, image_url: event.target.value })}
-            className="min-h-12 rounded-md border border-stone-300 px-3 font-normal outline-none focus:border-teal-600 focus:ring-2 focus:ring-teal-100"
           />
         </label>
 
