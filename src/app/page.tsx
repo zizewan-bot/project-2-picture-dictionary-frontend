@@ -1,65 +1,99 @@
-import Image from "next/image";
+"use client";
+
+import { FormEvent, useState } from "react";
+
+import { searchWord, type WordLookup } from "@/lib/api";
+import { StatusBadge } from "@/components/StatusBadge";
+import { WordImage } from "@/components/WordImage";
 
 export default function Home() {
+  const [word, setWord] = useState("");
+  const [result, setResult] = useState<WordLookup | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+
+  async function handleSearch(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    setError("");
+    setLoading(true);
+    try {
+      const savedWord = await searchWord(word);
+      setResult(savedWord);
+      setWord("");
+    } catch (caughtError) {
+      setError(caughtError instanceof Error ? caughtError.message : "Search failed.");
+    } finally {
+      setLoading(false);
+    }
+  }
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
+    <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_420px]">
+      <section className="space-y-6">
+        <div className="space-y-3">
+          <p className="text-sm font-bold uppercase tracking-wide text-teal-700">Mini Project 2</p>
+          <h1 className="max-w-3xl text-4xl font-black text-stone-950 sm:text-5xl">
+            Search an English word and save it to your lookup notebook.
           </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
+          <p className="max-w-2xl text-lg leading-8 text-stone-700">
+            Every search creates or updates today&apos;s visual word record. Repeated searches for the same word increase the lookup count.
           </p>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+
+        <form onSubmit={handleSearch} className="flex flex-col gap-3 rounded-lg border border-stone-200 bg-white p-4 shadow-sm sm:flex-row">
+          <label className="sr-only" htmlFor="word">
+            English word
+          </label>
+          <input
+            id="word"
+            value={word}
+            onChange={(event) => setWord(event.target.value)}
+            placeholder="Search apple, pencil, school..."
+            className="min-h-12 flex-1 rounded-md border border-stone-300 px-4 text-base outline-none focus:border-teal-600 focus:ring-2 focus:ring-teal-100"
+          />
+          <button
+            type="submit"
+            disabled={loading || !word.trim()}
+            className="min-h-12 rounded-md bg-teal-700 px-5 font-bold text-white transition hover:bg-teal-800 disabled:cursor-not-allowed disabled:bg-stone-300"
           >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
+            {loading ? "Searching..." : "Search"}
+          </button>
+        </form>
+
+        {error && <p className="rounded-md border border-red-200 bg-red-50 p-3 font-semibold text-red-700">{error}</p>}
+
+        {!result && !loading && (
+          <div className="rounded-lg border border-dashed border-stone-300 bg-white/70 p-8 text-center text-stone-600">
+            Search your first word.
+          </div>
+        )}
+      </section>
+
+      {result && (
+        <aside className="overflow-hidden rounded-lg border border-stone-200 bg-white shadow-sm">
+          <div className="aspect-[3/2] bg-stone-100">
+            <WordImage src={result.image_url} word={result.word} />
+          </div>
+          <div className="space-y-4 p-5">
+            <div className="flex items-center justify-between gap-3">
+              <h2 className="text-3xl font-black capitalize">{result.word}</h2>
+              <StatusBadge status={result.learning_status} />
+            </div>
+            <p className="leading-7 text-stone-700">{result.simple_definition}</p>
+            <p className="rounded-md bg-stone-100 p-3 text-stone-800">{result.example_sentence}</p>
+            <div className="grid grid-cols-2 gap-3 text-sm">
+              <div className="rounded-md border border-stone-200 p-3">
+                <p className="font-bold text-stone-500">Lookup count</p>
+                <p className="text-2xl font-black">{result.lookup_count}</p>
+              </div>
+              <div className="rounded-md border border-stone-200 p-3">
+                <p className="font-bold text-stone-500">Saved status</p>
+                <p className="text-2xl font-black capitalize">{result.learning_status}</p>
+              </div>
+            </div>
+          </div>
+        </aside>
+      )}
     </div>
   );
 }
