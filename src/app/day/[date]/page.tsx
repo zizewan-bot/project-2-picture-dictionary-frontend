@@ -6,6 +6,14 @@ import { useEffect, useState } from "react";
 import { WordCard } from "@/components/WordCard";
 import { getDay, type LookupDay } from "@/lib/api";
 
+function formatDate(date: string) {
+  return new Intl.DateTimeFormat("en-US", {
+    month: "long",
+    day: "numeric",
+    year: "numeric",
+  }).format(new Date(`${date}T00:00:00`));
+}
+
 export default function DayPage() {
   const params = useParams<{ date: string }>();
   const [day, setDay] = useState<LookupDay | null>(null);
@@ -22,8 +30,8 @@ export default function DayPage() {
   return (
     <section className="space-y-6">
       <div>
-        <p className="text-sm font-bold uppercase tracking-wide text-teal-700">Daily word list</p>
-        <h1 className="text-4xl font-black">{params.date}</h1>
+        <p className="text-sm font-bold uppercase tracking-wide text-teal-700">Words searched on</p>
+        <h1 className="text-4xl font-black">{formatDate(params.date)}</h1>
       </div>
 
       {loading && <p className="rounded-md bg-white p-4 font-semibold">Loading words...</p>}

@@ -15,6 +15,7 @@ export default function Home() {
   async function handleSearch(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setError("");
+    setResult(null);
     setLoading(true);
     try {
       const savedWord = await searchWord(word);
@@ -31,12 +32,12 @@ export default function Home() {
     <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_420px]">
       <section className="space-y-6">
         <div className="space-y-3">
-          <p className="text-sm font-bold uppercase tracking-wide text-teal-700">Mini Project 2</p>
+          <p className="text-sm font-bold uppercase tracking-wide text-teal-700">Picture Dictionary</p>
           <h1 className="max-w-3xl text-4xl font-black text-stone-950 sm:text-5xl">
-            Search an English word and save it to the global AI picture library.
+            Learn English words with clear pictures.
           </h1>
           <p className="max-w-2xl text-lg leading-8 text-stone-700">
-            New words get one shared AI-generated image in cloud storage. Repeated searches reuse that image and increase today&apos;s lookup count.
+            Search a word or common phrase to see a simple meaning, a short example, and a clear picture.
           </p>
         </div>
 
@@ -48,7 +49,7 @@ export default function Home() {
             id="word"
             value={word}
             onChange={(event) => setWord(event.target.value)}
-            placeholder="Search apple, pencil, school..."
+            placeholder="Search an English word..."
             className="min-h-12 flex-1 rounded-md border border-stone-300 px-4 text-base outline-none focus:border-teal-600 focus:ring-2 focus:ring-teal-100"
           />
           <button
@@ -83,11 +84,11 @@ export default function Home() {
             <p className="rounded-md bg-stone-100 p-3 text-stone-800">{result.example_sentence}</p>
             <div className="grid grid-cols-2 gap-3 text-sm">
               <div className="rounded-md border border-stone-200 p-3">
-                <p className="font-bold text-stone-500">Lookup count</p>
+                <p className="font-bold text-stone-500">Times searched</p>
                 <p className="text-2xl font-black">{result.lookup_count}</p>
               </div>
               <div className="rounded-md border border-stone-200 p-3">
-                <p className="font-bold text-stone-500">Saved status</p>
+                <p className="font-bold text-stone-500">Learning status</p>
                 <p className="text-2xl font-black capitalize">{result.learning_status}</p>
               </div>
             </div>

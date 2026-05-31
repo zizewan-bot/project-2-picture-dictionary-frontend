@@ -39,7 +39,7 @@ export default function CalendarPage() {
   return (
     <section className="space-y-6">
       <div>
-        <p className="text-sm font-bold uppercase tracking-wide text-teal-700">Calendar notebook</p>
+        <p className="text-sm font-bold uppercase tracking-wide text-teal-700">Your Word Calendar</p>
         <h1 className="text-4xl font-black">{monthTitle}</h1>
       </div>
 
@@ -71,7 +71,7 @@ export default function CalendarPage() {
                   <p className="text-lg font-black">{date.getDate()}</p>
                   <div className="mt-4 space-y-1 text-sm">
                     <p>{summary?.unique_words_count ?? 0} unique words</p>
-                    <p>{summary?.total_lookup_count ?? 0} total lookups</p>
+                    <p>{summary?.total_lookup_count ?? 0} total searches</p>
                   </div>
                 </Link>
               );

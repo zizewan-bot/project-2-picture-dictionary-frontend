@@ -1,6 +1,6 @@
 # Picture Dictionary Frontend
 
-Next.js App Router frontend for Mini Project 2: Picture Dictionary. The UI displays one canonical 512x384 image per global word record.
+Frontend for Picture Dictionary. The UI displays one canonical 512x384 image for each accepted word.
 
 ## Setup
 

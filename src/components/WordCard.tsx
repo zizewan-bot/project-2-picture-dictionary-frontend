@@ -21,7 +21,7 @@ export function WordCard({ word }: { word: WordLookup }) {
           <StatusBadge status={word.learning_status} />
         </div>
         <p className="text-sm leading-6 text-stone-700">{word.simple_definition}</p>
-        <p className="text-sm font-semibold text-stone-900">Lookups: {word.lookup_count}</p>
+        <p className="text-sm font-semibold text-stone-900">Times searched: {word.lookup_count}</p>
       </div>
     </Link>
   );

@@ -44,7 +44,7 @@ export default function WordDetailPage() {
     try {
       const updatedWord = await updateWord(params.id, form);
       setWord(updatedWord);
-      setMessage("Word record updated.");
+      setMessage("Word details updated.");
     } catch (caughtError) {
       setError(caughtError instanceof Error ? caughtError.message : "Update failed.");
     } finally {
@@ -66,7 +66,7 @@ export default function WordDetailPage() {
   }
 
   if (loading) {
-    return <p className="rounded-md bg-white p-4 font-semibold">Loading word record...</p>;
+    return <p className="rounded-md bg-white p-4 font-semibold">Loading word details...</p>;
   }
 
   if (!word) {
@@ -88,7 +88,7 @@ export default function WordDetailPage() {
           <p className="rounded-md bg-stone-100 p-3 text-stone-800">{word.example_sentence}</p>
           <dl className="grid gap-3 text-sm">
             <div className="rounded-md border border-stone-200 p-3">
-              <dt className="font-bold text-stone-500">Lookup count</dt>
+              <dt className="font-bold text-stone-500">Times searched</dt>
               <dd className="text-2xl font-black">{word.lookup_count}</dd>
             </div>
             <div className="rounded-md border border-stone-200 p-3">
@@ -105,8 +105,8 @@ export default function WordDetailPage() {
 
       <form onSubmit={handleUpdate} className="space-y-5 rounded-lg border border-stone-200 bg-white p-5 shadow-sm">
         <div>
-          <p className="text-sm font-bold uppercase tracking-wide text-teal-700">Edit word record</p>
-          <h2 className="text-3xl font-black">Learning notes</h2>
+          <p className="text-sm font-bold uppercase tracking-wide text-teal-700">Word Details</p>
+          <h2 className="text-3xl font-black">Edit learning notes</h2>
         </div>
 
         {error && <p className="rounded-md border border-red-200 bg-red-50 p-3 font-semibold text-red-700">{error}</p>}
@@ -157,7 +157,7 @@ export default function WordDetailPage() {
             disabled={deleting}
             className="min-h-12 rounded-md border border-red-300 px-5 font-bold text-red-700 transition hover:bg-red-50 disabled:text-stone-400"
           >
-            {deleting ? "Deleting..." : "Delete word lookup"}
+            {deleting ? "Deleting..." : "Remove from this day"}
           </button>
         </div>
       </form>
