@@ -18,6 +18,10 @@ Open `http://localhost:3000`.
 NEXT_PUBLIC_API_URL=http://localhost:8000
 ```
 
+For Vercel, set `NEXT_PUBLIC_API_URL` to the deployed backend URL. Do not add OpenAI or Cloudinary secrets to the frontend; those belong only in the backend environment.
+
+The Home page includes a demo access code field for public demos. The code is saved in the visitor's browser `localStorage` and sent to the backend as `X-Demo-Code` only when searching.
+
 ## Validation
 
 ```bash

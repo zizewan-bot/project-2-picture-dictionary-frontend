@@ -97,8 +97,10 @@ async function request<T>(path: string, options?: RequestInit): Promise<T> {
   return response.json();
 }
 
-export function searchWord(word: string) {
-  return request<WordLookup>(`/search?word=${encodeURIComponent(word)}`);
+export function searchWord(word: string, demoCode?: string) {
+  return request<WordLookup>(`/search?word=${encodeURIComponent(word)}`, {
+    headers: demoCode ? { "X-Demo-Code": demoCode } : undefined,
+  });
 }
 
 export function getCalendar() {

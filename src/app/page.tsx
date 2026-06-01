@@ -1,6 +1,6 @@
 "use client";
 
-import { FormEvent, useState } from "react";
+import { FormEvent, useEffect, useState } from "react";
 
 import { searchWord, type WordLookup } from "@/lib/api";
 import { PronunciationButton } from "@/components/PronunciationButton";
@@ -13,6 +13,19 @@ export default function Home() {
   const [result, setResult] = useState<WordLookup | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [demoCode, setDemoCode] = useState("");
+
+  useEffect(() => {
+    const timer = window.setTimeout(() => {
+      setDemoCode(window.localStorage.getItem("pictureDictionaryDemoCode") ?? "");
+    }, 0);
+    return () => window.clearTimeout(timer);
+  }, []);
+
+  function handleDemoCodeChange(value: string) {
+    setDemoCode(value);
+    window.localStorage.setItem("pictureDictionaryDemoCode", value);
+  }
 
   async function handleSearch(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -20,7 +33,7 @@ export default function Home() {
     setResult(null);
     setLoading(true);
     try {
-      const savedWord = await searchWord(word);
+      const savedWord = await searchWord(word, demoCode.trim());
       setResult(savedWord);
       setWord("");
     } catch (caughtError) {
@@ -71,6 +84,22 @@ export default function Home() {
           <p className="mt-3 text-sm text-stone-600">
             Try one word, like &apos;cat&apos;, or a short phrase, like &apos;ice cream&apos;.
           </p>
+          <div className="mt-4 border-t border-stone-200 pt-4">
+            <label className="text-sm font-bold text-stone-700" htmlFor="demo-code">
+              Enter demo code
+            </label>
+            <input
+              id="demo-code"
+              value={demoCode}
+              onChange={(event) => handleDemoCodeChange(event.target.value)}
+              type="password"
+              autoComplete="off"
+              className="mt-2 min-h-11 w-full rounded-md border border-stone-300 px-3 text-base outline-none focus:border-teal-600 focus:ring-2 focus:ring-teal-100"
+            />
+            <p className="mt-2 text-sm text-stone-600">
+              This public demo requires an access code to create new picture words.
+            </p>
+          </div>
         </form>
 
         {loading && (
