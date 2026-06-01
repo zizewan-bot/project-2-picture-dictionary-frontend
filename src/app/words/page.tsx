@@ -4,7 +4,6 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 
 import { PronunciationLine } from "@/components/PronunciationLine";
-import { StatusBadge } from "@/components/StatusBadge";
 import { getWordSummary, type WordSummary } from "@/lib/api";
 
 function formatDate(date: string | null) {
@@ -48,12 +47,11 @@ export default function WordsPage() {
 
       {!loading && !error && words.length > 0 && (
         <div className="overflow-hidden rounded-lg border border-stone-200 bg-white shadow-sm">
-          <div className="hidden grid-cols-[minmax(160px,1.4fr)_minmax(120px,1fr)_120px_150px_140px] gap-4 bg-stone-100 px-4 py-3 text-xs font-black uppercase tracking-wide text-stone-600 md:grid">
+          <div className="hidden grid-cols-[minmax(160px,1.5fr)_minmax(120px,1fr)_120px_160px] gap-4 bg-stone-100 px-4 py-3 text-xs font-black uppercase tracking-wide text-stone-600 md:grid">
             <span>Word</span>
             <span>Pronunciation</span>
-            <span>Total</span>
-            <span>Last searched</span>
-            <span>Status</span>
+            <span>Times searched</span>
+            <span>Recently searched</span>
           </div>
           <div className="divide-y divide-stone-200">
             {words.map((word) => {
@@ -62,7 +60,7 @@ export default function WordsPage() {
                 <Link
                   key={word.global_word_id}
                   href={rowHref}
-                  className="grid gap-3 px-4 py-4 transition hover:bg-teal-50 md:grid-cols-[minmax(160px,1.4fr)_minmax(120px,1fr)_120px_150px_140px] md:items-center md:gap-4"
+                  className="grid gap-3 px-4 py-4 transition hover:bg-teal-50 md:grid-cols-[minmax(160px,1.5fr)_minmax(120px,1fr)_120px_160px] md:items-center md:gap-4"
                 >
                   <div>
                     <h2 className="text-lg font-black capitalize text-stone-950">{word.display_word}</h2>
@@ -74,10 +72,9 @@ export default function WordsPage() {
                     {word.total_lookup_count}
                   </p>
                   <p className="text-sm font-semibold text-stone-700">
-                    <span className="md:hidden">Last searched: </span>
+                    <span className="md:hidden">Recently searched: </span>
                     {formatDate(word.last_searched_at)}
                   </p>
-                  {word.latest_learning_status ? <StatusBadge status={word.latest_learning_status} /> : <span className="text-sm text-stone-500">Not started</span>}
                 </Link>
               );
             })}

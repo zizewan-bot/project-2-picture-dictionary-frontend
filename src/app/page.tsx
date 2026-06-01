@@ -5,7 +5,6 @@ import { FormEvent, useEffect, useState } from "react";
 import { searchWord, type WordLookup } from "@/lib/api";
 import { PronunciationButton } from "@/components/PronunciationButton";
 import { PronunciationLine } from "@/components/PronunciationLine";
-import { StatusBadge } from "@/components/StatusBadge";
 import { WordImage } from "@/components/WordImage";
 
 export default function Home() {
@@ -117,25 +116,16 @@ export default function Home() {
             <WordImage src={result.image_url} word={result.word} />
           </div>
           <div className="space-y-4 p-5">
-            <div className="flex items-center justify-between gap-3">
-              <h2 className="text-3xl font-black capitalize">{result.word}</h2>
-              <StatusBadge status={result.learning_status} />
-            </div>
+            <h2 className="text-3xl font-black capitalize">{result.word}</h2>
             <div className="flex flex-wrap items-center justify-between gap-3">
               <PronunciationLine ipaUs={result.ipa_us} ipaUk={result.ipa_uk} />
               <PronunciationButton word={result.word} />
             </div>
             <p className="leading-7 text-stone-700">{result.simple_definition}</p>
             <p className="rounded-md bg-stone-100 p-3 text-stone-800">{result.example_sentence}</p>
-            <div className="grid grid-cols-2 gap-3 text-sm">
-              <div className="rounded-md border border-stone-200 p-3">
-                <p className="font-bold text-stone-500">Times searched</p>
-                <p className="text-2xl font-black">{result.lookup_count}</p>
-              </div>
-              <div className="rounded-md border border-stone-200 p-3">
-                <p className="font-bold text-stone-500">Learning status</p>
-                <p className="text-2xl font-black capitalize">{result.learning_status}</p>
-              </div>
+            <div className="rounded-md border border-stone-200 p-3 text-sm">
+              <p className="font-bold text-stone-500">Times searched</p>
+              <p className="text-2xl font-black">{result.lookup_count}</p>
             </div>
           </div>
         </aside>

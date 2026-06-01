@@ -3,7 +3,6 @@ import Link from "next/link";
 import type { WordLookup } from "@/lib/api";
 import { PronunciationButton } from "@/components/PronunciationButton";
 import { PronunciationLine } from "@/components/PronunciationLine";
-import { StatusBadge } from "@/components/StatusBadge";
 import { WordImage } from "@/components/WordImage";
 
 export function WordCard({ word }: { word: WordLookup }) {
@@ -17,7 +16,6 @@ export function WordCard({ word }: { word: WordLookup }) {
           <Link href={`/words/${word.id}`} className="text-2xl font-bold capitalize text-stone-950 hover:text-teal-700">
             {word.word}
           </Link>
-          <StatusBadge status={word.learning_status} />
         </div>
         <PronunciationLine ipaUs={word.ipa_us} ipaUk={word.ipa_uk} />
         <p className="text-sm leading-6 text-stone-700">{word.simple_definition}</p>
