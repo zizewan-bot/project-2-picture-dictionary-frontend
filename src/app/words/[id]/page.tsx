@@ -5,6 +5,8 @@ import { useParams, useRouter } from "next/navigation";
 
 import { StatusBadge } from "@/components/StatusBadge";
 import { WordImage } from "@/components/WordImage";
+import { PronunciationButton } from "@/components/PronunciationButton";
+import { PronunciationLine } from "@/components/PronunciationLine";
 import { deleteWord, getWord, updateWord, type LearningStatus, type WordLookup } from "@/lib/api";
 
 export default function WordDetailPage() {
@@ -83,6 +85,10 @@ export default function WordDetailPage() {
           <div className="flex items-center justify-between gap-3">
             <h1 className="text-3xl font-black capitalize">{word.word}</h1>
             <StatusBadge status={word.learning_status} />
+          </div>
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <PronunciationLine ipaUs={word.ipa_us} ipaUk={word.ipa_uk} />
+            <PronunciationButton word={word.word} />
           </div>
           <p className="leading-7 text-stone-700">{word.simple_definition}</p>
           <p className="rounded-md bg-stone-100 p-3 text-stone-800">{word.example_sentence}</p>

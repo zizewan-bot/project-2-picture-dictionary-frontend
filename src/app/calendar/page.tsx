@@ -6,7 +6,14 @@ import { useEffect, useMemo, useState } from "react";
 import { getCalendar, type CalendarDay } from "@/lib/api";
 
 function dateKey(date: Date) {
-  return date.toISOString().slice(0, 10);
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+}
+
+function parseDateKey(key: string) {
+  return new Date(`${key}T00:00:00`);
 }
 
 export default function CalendarPage() {
@@ -22,9 +29,15 @@ export default function CalendarPage() {
   }, []);
 
   const dayMap = useMemo(() => new Map(days.map((day) => [day.date, day])), [days]);
+  const calendarMonth = useMemo(() => {
+    if (days.length === 0) {
+      return new Date();
+    }
+    const latestDay = [...days].sort((a, b) => b.date.localeCompare(a.date))[0];
+    return parseDateKey(latestDay.date);
+  }, [days]);
   const visibleDates = useMemo(() => {
-    const today = new Date();
-    const start = new Date(today.getFullYear(), today.getMonth(), 1);
+    const start = new Date(calendarMonth.getFullYear(), calendarMonth.getMonth(), 1);
     const firstGridDay = new Date(start);
     firstGridDay.setDate(start.getDate() - start.getDay());
     return Array.from({ length: 42 }, (_, index) => {
@@ -32,9 +45,9 @@ export default function CalendarPage() {
       date.setDate(firstGridDay.getDate() + index);
       return date;
     });
-  }, []);
+  }, [calendarMonth]);
 
-  const monthTitle = new Intl.DateTimeFormat("en-US", { month: "long", year: "numeric" }).format(new Date());
+  const monthTitle = new Intl.DateTimeFormat("en-US", { month: "long", year: "numeric" }).format(calendarMonth);
 
   return (
     <section className="space-y-6">
@@ -59,7 +72,7 @@ export default function CalendarPage() {
             {visibleDates.map((date) => {
               const key = dateKey(date);
               const summary = dayMap.get(key);
-              const isCurrentMonth = date.getMonth() === new Date().getMonth();
+              const isCurrentMonth = date.getMonth() === calendarMonth.getMonth();
               return (
                 <Link
                   key={key}

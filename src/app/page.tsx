@@ -3,6 +3,8 @@
 import { FormEvent, useState } from "react";
 
 import { searchWord, type WordLookup } from "@/lib/api";
+import { PronunciationButton } from "@/components/PronunciationButton";
+import { PronunciationLine } from "@/components/PronunciationLine";
 import { StatusBadge } from "@/components/StatusBadge";
 import { WordImage } from "@/components/WordImage";
 
@@ -24,7 +26,7 @@ export default function Home() {
     } catch (caughtError) {
       const message = caughtError instanceof Error ? caughtError.message : "Search failed.";
       if (message.includes("reliable picture")) {
-        setError("We could not create a reliable picture for this word yet. Please try again.");
+        setError("We could not create a safe and reliable picture for this word yet. Please try again.");
       } else {
         setError(message);
       }
@@ -63,7 +65,7 @@ export default function Home() {
               disabled={loading || !word.trim()}
               className="min-h-12 rounded-md bg-teal-700 px-5 font-bold text-white transition hover:bg-teal-800 disabled:cursor-not-allowed disabled:bg-stone-300"
             >
-              {loading ? "Searching..." : "Search"}
+              {loading ? "Creating your picture..." : "Search"}
             </button>
           </div>
           <p className="mt-3 text-sm text-stone-600">
@@ -71,13 +73,13 @@ export default function Home() {
           </p>
         </form>
 
-        {error && <p className="rounded-md border border-red-200 bg-red-50 p-3 font-semibold text-red-700">{error}</p>}
-
-        {!result && !loading && (
-          <div className="rounded-lg border border-dashed border-stone-300 bg-white/70 p-8 text-center text-stone-600">
-            Search your first word.
-          </div>
+        {loading && (
+          <p className="rounded-md bg-white/80 p-3 text-sm font-semibold text-stone-700">
+            This can take a moment the first time a word is searched.
+          </p>
         )}
+
+        {error && <p className="rounded-md border border-red-200 bg-red-50 p-3 font-semibold text-red-700">{error}</p>}
       </section>
 
       {result && (
@@ -89,6 +91,10 @@ export default function Home() {
             <div className="flex items-center justify-between gap-3">
               <h2 className="text-3xl font-black capitalize">{result.word}</h2>
               <StatusBadge status={result.learning_status} />
+            </div>
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <PronunciationLine ipaUs={result.ipa_us} ipaUk={result.ipa_uk} />
+              <PronunciationButton word={result.word} />
             </div>
             <p className="leading-7 text-stone-700">{result.simple_definition}</p>
             <p className="rounded-md bg-stone-100 p-3 text-stone-800">{result.example_sentence}</p>

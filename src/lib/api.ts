@@ -7,6 +7,9 @@ export type GlobalWord = {
   display_word: string;
   simple_definition: string;
   example_sentence: string;
+  ipa_us: string;
+  ipa_uk: string;
+  pronunciation_note: string | null;
   image_url: string | null;
   image_public_id: string | null;
   image_status: ImageStatus;
@@ -21,6 +24,9 @@ export type WordLookup = {
   word: string;
   simple_definition: string;
   example_sentence: string;
+  ipa_us: string;
+  ipa_uk: string;
+  pronunciation_note: string | null;
   image_url: string | null;
   lookup_count: number;
   learning_status: LearningStatus;
@@ -43,6 +49,23 @@ export type LookupDay = {
   date: string;
   created_at: string;
   word_lookups: WordLookup[];
+};
+
+export type WordSummary = {
+  global_word_id: number;
+  display_word: string;
+  normalized_word: string;
+  simple_definition: string;
+  example_sentence: string;
+  ipa_us: string;
+  ipa_uk: string;
+  image_url: string | null;
+  image_status: ImageStatus;
+  total_lookup_count: number;
+  last_searched_at: string | null;
+  latest_word_lookup_id: number | null;
+  last_lookup_date: string | null;
+  days_count: number;
 };
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
@@ -88,6 +111,10 @@ export function getDay(date: string) {
 
 export function getWord(id: string) {
   return request<WordLookup>(`/words/${id}`, { cache: "no-store" });
+}
+
+export function getWordSummary() {
+  return request<WordSummary[]>("/words/summary", { cache: "no-store" });
 }
 
 export function updateWord(id: string, payload: Pick<WordLookup, "simple_definition" | "example_sentence" | "learning_status">) {
