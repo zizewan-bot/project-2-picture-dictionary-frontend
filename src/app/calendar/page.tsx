@@ -16,6 +16,14 @@ function parseDateKey(key: string) {
   return new Date(`${key}T00:00:00`);
 }
 
+function formatDate(key: string) {
+  return new Intl.DateTimeFormat("en-US", {
+    month: "long",
+    day: "numeric",
+    year: "numeric",
+  }).format(parseDateKey(key));
+}
+
 export default function CalendarPage() {
   const [days, setDays] = useState<CalendarDay[]>([]);
   const [loading, setLoading] = useState(true);
@@ -29,13 +37,19 @@ export default function CalendarPage() {
   }, []);
 
   const dayMap = useMemo(() => new Map(days.map((day) => [day.date, day])), [days]);
+  const lookupDays = useMemo(
+    () =>
+      days
+        .filter((day) => day.unique_words_count > 0 || day.total_lookup_count > 0)
+        .sort((a, b) => b.date.localeCompare(a.date)),
+    [days],
+  );
   const calendarMonth = useMemo(() => {
-    if (days.length === 0) {
+    if (lookupDays.length === 0) {
       return new Date();
     }
-    const latestDay = [...days].sort((a, b) => b.date.localeCompare(a.date))[0];
-    return parseDateKey(latestDay.date);
-  }, [days]);
+    return parseDateKey(lookupDays[0].date);
+  }, [lookupDays]);
   const visibleDates = useMemo(() => {
     const start = new Date(calendarMonth.getFullYear(), calendarMonth.getMonth(), 1);
     const firstGridDay = new Date(start);
@@ -60,37 +74,64 @@ export default function CalendarPage() {
       {error && <p className="rounded-md border border-red-200 bg-red-50 p-4 font-semibold text-red-700">{error}</p>}
 
       {!loading && !error && (
-        <div className="overflow-hidden rounded-lg border border-stone-200 bg-white shadow-sm">
-          <div className="grid grid-cols-7 bg-stone-100 text-center text-xs font-black uppercase text-stone-600">
-            {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((weekday) => (
-              <div className="px-2 py-3" key={weekday}>
-                {weekday}
+        <>
+          {lookupDays.length > 0 && (
+            <Link
+              href={`/day/${lookupDays[0].date}`}
+              className="block rounded-lg border border-teal-200 bg-teal-50 p-4 shadow-sm transition hover:border-teal-400"
+            >
+              <p className="text-sm font-bold uppercase tracking-wide text-teal-800">Latest lookup day</p>
+              <div className="mt-2 flex flex-wrap items-end justify-between gap-3">
+                <h2 className="text-2xl font-black text-stone-950">{formatDate(lookupDays[0].date)}</h2>
+                <div className="flex flex-wrap gap-2 text-sm font-bold text-teal-900">
+                  <span className="rounded-md bg-white px-3 py-2">{lookupDays[0].unique_words_count} unique words</span>
+                  <span className="rounded-md bg-white px-3 py-2">{lookupDays[0].total_lookup_count} times searched</span>
+                </div>
               </div>
-            ))}
+            </Link>
+          )}
+
+          <div className="overflow-hidden rounded-lg border border-stone-200 bg-white shadow-sm">
+            <div className="grid grid-cols-7 bg-stone-100 text-center text-[0.68rem] font-black uppercase text-stone-600 sm:text-xs">
+              {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((weekday) => (
+                <div className="px-1 py-2 sm:px-2 sm:py-3" key={weekday}>
+                  {weekday}
+                </div>
+              ))}
+            </div>
+            <div className="grid grid-cols-7">
+              {visibleDates.map((date) => {
+                const key = dateKey(date);
+                const summary = dayMap.get(key);
+                const hasRecords = Boolean(summary && (summary.unique_words_count > 0 || summary.total_lookup_count > 0));
+                const isCurrentMonth = date.getMonth() === calendarMonth.getMonth();
+                return (
+                  <Link
+                    key={key}
+                    href={`/day/${key}`}
+                    className={`min-h-24 border-t border-stone-200 p-2 transition hover:bg-teal-50 sm:min-h-32 sm:p-3 [&:not(:nth-child(7n))]:border-r ${
+                      hasRecords
+                        ? "bg-teal-50 text-stone-950 ring-2 ring-inset ring-teal-300"
+                        : isCurrentMonth
+                          ? "bg-white text-stone-700"
+                          : "bg-stone-50 text-stone-400"
+                    }`}
+                  >
+                    <p className="text-base font-black sm:text-lg">{date.getDate()}</p>
+                    {hasRecords ? (
+                      <div className="mt-2 space-y-1 text-[0.68rem] font-bold text-teal-900 sm:mt-4 sm:text-sm">
+                        <p>{summary?.unique_words_count} unique</p>
+                        <p>{summary?.total_lookup_count} searched</p>
+                      </div>
+                    ) : (
+                      <p className="mt-2 hidden text-xs text-stone-400 sm:block">0 searched</p>
+                    )}
+                  </Link>
+                );
+              })}
+            </div>
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-7">
-            {visibleDates.map((date) => {
-              const key = dateKey(date);
-              const summary = dayMap.get(key);
-              const isCurrentMonth = date.getMonth() === calendarMonth.getMonth();
-              return (
-                <Link
-                  key={key}
-                  href={`/day/${key}`}
-                  className={`min-h-32 border-t border-stone-200 p-3 transition hover:bg-teal-50 sm:border-r ${
-                    isCurrentMonth ? "bg-white" : "bg-stone-50 text-stone-400"
-                  }`}
-                >
-                  <p className="text-lg font-black">{date.getDate()}</p>
-                  <div className="mt-4 space-y-1 text-sm">
-                    <p>{summary?.unique_words_count ?? 0} unique words</p>
-                    <p>{summary?.total_lookup_count ?? 0} total searches</p>
-                  </div>
-                </Link>
-              );
-            })}
-          </div>
-        </div>
+        </>
       )}
     </section>
   );

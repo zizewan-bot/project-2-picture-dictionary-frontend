@@ -21,6 +21,7 @@ export function WordCard({ word }: { word: WordLookup }) {
         </div>
         <PronunciationLine ipaUs={word.ipa_us} ipaUk={word.ipa_uk} />
         <p className="text-sm leading-6 text-stone-700">{word.simple_definition}</p>
+        <p className="rounded-md bg-stone-100 p-3 text-sm text-stone-800">{word.example_sentence}</p>
         <div className="flex flex-wrap items-center justify-between gap-3">
           <p className="text-sm font-semibold text-stone-900">Times searched: {word.lookup_count}</p>
           <PronunciationButton word={word.word} />

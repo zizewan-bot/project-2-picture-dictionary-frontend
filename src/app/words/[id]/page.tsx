@@ -46,7 +46,7 @@ export default function WordDetailPage() {
     try {
       const updatedWord = await updateWord(params.id, form);
       setWord(updatedWord);
-      setMessage("Word details updated.");
+      setMessage("Word updated.");
     } catch (caughtError) {
       setError(caughtError instanceof Error ? caughtError.message : "Update failed.");
     } finally {
@@ -68,7 +68,7 @@ export default function WordDetailPage() {
   }
 
   if (loading) {
-    return <p className="rounded-md bg-white p-4 font-semibold">Loading word details...</p>;
+    return <p className="rounded-md bg-white p-4 font-semibold">Loading word...</p>;
   }
 
   if (!word) {
@@ -111,7 +111,7 @@ export default function WordDetailPage() {
 
       <form onSubmit={handleUpdate} className="space-y-5 rounded-lg border border-stone-200 bg-white p-5 shadow-sm">
         <div>
-          <p className="text-sm font-bold uppercase tracking-wide text-teal-700">Word Details</p>
+          <p className="text-sm font-bold uppercase tracking-wide text-teal-700">Word</p>
           <h2 className="text-3xl font-black">Edit learning notes</h2>
         </div>
 

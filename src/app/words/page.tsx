@@ -3,10 +3,9 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 
-import { getWordSummary, type WordSummary } from "@/lib/api";
-import { PronunciationButton } from "@/components/PronunciationButton";
 import { PronunciationLine } from "@/components/PronunciationLine";
-import { WordImage } from "@/components/WordImage";
+import { StatusBadge } from "@/components/StatusBadge";
+import { getWordSummary, type WordSummary } from "@/lib/api";
 
 function formatDate(date: string | null) {
   if (!date) {
@@ -48,34 +47,41 @@ export default function WordsPage() {
       )}
 
       {!loading && !error && words.length > 0 && (
-        <div className="grid gap-4">
-          {words.map((word) => (
-            <article
-              key={word.global_word_id}
-              className="grid overflow-hidden rounded-lg border border-stone-200 bg-white shadow-sm sm:grid-cols-[192px_1fr]"
-            >
-              <div className="aspect-[4/3] bg-stone-100">
-                <WordImage src={word.image_url} word={word.display_word} />
-              </div>
-              <div className="space-y-3 p-4">
-                <div className="flex flex-wrap items-center justify-between gap-3">
-                  <h2 className="text-2xl font-bold capitalize text-stone-950">{word.display_word}</h2>
-                  <PronunciationButton word={word.display_word} />
-                </div>
-                <PronunciationLine ipaUs={word.ipa_us} ipaUk={word.ipa_uk} />
-                <p className="text-sm leading-6 text-stone-700">{word.simple_definition}</p>
-                <div className="grid gap-2 text-sm font-semibold text-stone-800 sm:grid-cols-2">
-                  <p>Total times searched: {word.total_lookup_count}</p>
-                  <p>Last searched: {formatDate(word.last_searched_at)}</p>
-                </div>
-                {word.latest_word_lookup_id && (
-                  <Link href={`/words/${word.latest_word_lookup_id}`} className="inline-flex text-sm font-bold text-teal-800 hover:text-teal-950">
-                    View details
-                  </Link>
-                )}
-              </div>
-            </article>
-          ))}
+        <div className="overflow-hidden rounded-lg border border-stone-200 bg-white shadow-sm">
+          <div className="hidden grid-cols-[minmax(160px,1.4fr)_minmax(120px,1fr)_120px_150px_140px] gap-4 bg-stone-100 px-4 py-3 text-xs font-black uppercase tracking-wide text-stone-600 md:grid">
+            <span>Word</span>
+            <span>Pronunciation</span>
+            <span>Total</span>
+            <span>Last searched</span>
+            <span>Status</span>
+          </div>
+          <div className="divide-y divide-stone-200">
+            {words.map((word) => {
+              const rowHref = word.latest_word_lookup_id ? `/words/${word.latest_word_lookup_id}` : `/day/${word.last_lookup_date ?? ""}`;
+              return (
+                <Link
+                  key={word.global_word_id}
+                  href={rowHref}
+                  className="grid gap-3 px-4 py-4 transition hover:bg-teal-50 md:grid-cols-[minmax(160px,1.4fr)_minmax(120px,1fr)_120px_150px_140px] md:items-center md:gap-4"
+                >
+                  <div>
+                    <h2 className="text-lg font-black capitalize text-stone-950">{word.display_word}</h2>
+                    <p className="mt-1 text-sm text-stone-600">{word.simple_definition}</p>
+                  </div>
+                  <PronunciationLine ipaUs={word.ipa_us} ipaUk={word.ipa_uk} />
+                  <p className="text-sm font-bold text-stone-900">
+                    <span className="md:hidden">Total times searched: </span>
+                    {word.total_lookup_count}
+                  </p>
+                  <p className="text-sm font-semibold text-stone-700">
+                    <span className="md:hidden">Last searched: </span>
+                    {formatDate(word.last_searched_at)}
+                  </p>
+                  {word.latest_learning_status ? <StatusBadge status={word.latest_learning_status} /> : <span className="text-sm text-stone-500">Not started</span>}
+                </Link>
+              );
+            })}
+          </div>
         </div>
       )}
     </section>

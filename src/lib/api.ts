@@ -65,6 +65,7 @@ export type WordSummary = {
   last_searched_at: string | null;
   latest_word_lookup_id: number | null;
   last_lookup_date: string | null;
+  latest_learning_status: LearningStatus | null;
   days_count: number;
 };
 
