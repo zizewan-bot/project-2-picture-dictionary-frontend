@@ -8,14 +8,6 @@ import { PronunciationLine } from "@/components/PronunciationLine";
 import { WordImage } from "@/components/WordImage";
 import { getWord, type WordLookup } from "@/lib/api";
 
-function formatDate(date: string) {
-  return new Intl.DateTimeFormat("en-US", {
-    month: "short",
-    day: "numeric",
-    year: "numeric",
-  }).format(new Date(date));
-}
-
 export default function WordPage() {
   const params = useParams<{ id: string }>();
   const [word, setWord] = useState<WordLookup | null>(null);
@@ -59,15 +51,9 @@ export default function WordPage() {
             <p className="rounded-md bg-stone-100 p-4 text-stone-800">{word.example_sentence}</p>
           </div>
 
-          <div className="grid gap-3 text-sm sm:grid-cols-2">
-            <div className="rounded-md border border-stone-200 p-3">
-              <p className="font-bold text-stone-500">Times searched</p>
-              <p className="text-2xl font-black">{word.lookup_count}</p>
-            </div>
-            <div className="rounded-md border border-stone-200 p-3">
-              <p className="font-bold text-stone-500">Recently searched</p>
-              <p className="text-lg font-black">{formatDate(word.last_searched_at)}</p>
-            </div>
+          <div className="rounded-md border border-stone-200 p-3 text-sm">
+            <p className="font-bold text-stone-500">Times searched</p>
+            <p className="text-2xl font-black">{word.lookup_count}</p>
           </div>
         </div>
       </article>

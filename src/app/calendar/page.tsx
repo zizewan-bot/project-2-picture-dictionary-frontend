@@ -28,6 +28,7 @@ export default function CalendarPage() {
   const [days, setDays] = useState<CalendarDay[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [selectedMonth, setSelectedMonth] = useState<Date | null>(null);
 
   useEffect(() => {
     getCalendar()
@@ -45,11 +46,18 @@ export default function CalendarPage() {
     [days],
   );
   const calendarMonth = useMemo(() => {
-    if (lookupDays.length === 0) {
-      return new Date();
+    if (selectedMonth) {
+      return selectedMonth;
     }
-    return parseDateKey(lookupDays[0].date);
-  }, [lookupDays]);
+    return lookupDays.length > 0 ? parseDateKey(lookupDays[0].date) : new Date();
+  }, [lookupDays, selectedMonth]);
+  const hasRecordsInMonth = useMemo(
+    () => lookupDays.some((day) => {
+      const lookupDate = parseDateKey(day.date);
+      return lookupDate.getFullYear() === calendarMonth.getFullYear() && lookupDate.getMonth() === calendarMonth.getMonth();
+    }),
+    [calendarMonth, lookupDays],
+  );
   const visibleDates = useMemo(() => {
     const start = new Date(calendarMonth.getFullYear(), calendarMonth.getMonth(), 1);
     const firstGridDay = new Date(start);
@@ -63,11 +71,44 @@ export default function CalendarPage() {
 
   const monthTitle = new Intl.DateTimeFormat("en-US", { month: "long", year: "numeric" }).format(calendarMonth);
 
+  function moveMonth(offset: number) {
+    setSelectedMonth(new Date(calendarMonth.getFullYear(), calendarMonth.getMonth() + offset, 1));
+  }
+
+  function showLatestMonth() {
+    setSelectedMonth(lookupDays.length > 0 ? parseDateKey(lookupDays[0].date) : new Date());
+  }
+
   return (
     <section className="space-y-6">
-      <div>
-        <p className="text-sm font-bold uppercase tracking-wide text-teal-700">Your Word Calendar</p>
-        <h1 className="text-4xl font-black">{monthTitle}</h1>
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+        <div>
+          <p className="text-sm font-bold uppercase tracking-wide text-teal-700">Your Word Calendar</p>
+          <h1 className="text-4xl font-black">{monthTitle}</h1>
+        </div>
+        <div className="flex flex-wrap gap-2">
+          <button
+            type="button"
+            onClick={() => moveMonth(-1)}
+            className="rounded-md border border-stone-300 bg-white px-3 py-2 text-sm font-bold text-stone-800 transition hover:bg-stone-100"
+          >
+            Previous
+          </button>
+          <button
+            type="button"
+            onClick={showLatestMonth}
+            className="rounded-md border border-teal-200 bg-teal-50 px-3 py-2 text-sm font-bold text-teal-900 transition hover:bg-teal-100"
+          >
+            Latest lookup month
+          </button>
+          <button
+            type="button"
+            onClick={() => moveMonth(1)}
+            className="rounded-md border border-stone-300 bg-white px-3 py-2 text-sm font-bold text-stone-800 transition hover:bg-stone-100"
+          >
+            Next
+          </button>
+        </div>
       </div>
 
       {loading && <p className="rounded-md bg-white p-4 font-semibold">Loading calendar...</p>}
@@ -89,6 +130,12 @@ export default function CalendarPage() {
                 </div>
               </div>
             </Link>
+          )}
+
+          {!hasRecordsInMonth && (
+            <div className="rounded-lg border border-dashed border-stone-300 bg-white/70 p-4 text-sm font-semibold text-stone-600">
+              No words searched in this month yet.
+            </div>
           )}
 
           <div className="overflow-hidden rounded-lg border border-stone-200 bg-white shadow-sm">
