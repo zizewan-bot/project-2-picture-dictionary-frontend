@@ -1,12 +1,21 @@
 export type LearningStatus = "new" | "learning" | "mastered";
 export type ImageStatus = "pending" | "generated" | "failed";
 
+export type OtherSense = {
+  part_of_speech: string;
+  definition: string;
+  example_sentence: string;
+};
+
 export type GlobalWord = {
   id: number;
   normalized_word: string;
   display_word: string;
   simple_definition: string;
   example_sentence: string;
+  part_of_speech: string;
+  primary_sense: string;
+  other_senses: OtherSense[];
   ipa_us: string;
   ipa_uk: string;
   pronunciation_note: string | null;
@@ -24,6 +33,9 @@ export type WordLookup = {
   word: string;
   simple_definition: string;
   example_sentence: string;
+  part_of_speech: string;
+  primary_sense: string;
+  other_senses: OtherSense[];
   ipa_us: string;
   ipa_uk: string;
   pronunciation_note: string | null;
@@ -57,6 +69,9 @@ export type WordSummary = {
   normalized_word: string;
   simple_definition: string;
   example_sentence: string;
+  part_of_speech: string;
+  primary_sense: string;
+  other_senses: OtherSense[];
   ipa_us: string;
   ipa_uk: string;
   image_url: string | null;

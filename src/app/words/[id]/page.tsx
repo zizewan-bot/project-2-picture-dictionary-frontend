@@ -39,6 +39,7 @@ export default function WordPage() {
           <div>
             <p className="text-sm font-bold uppercase tracking-wide text-teal-700">Picture word card</p>
             <h1 className="mt-1 text-4xl font-black capitalize text-stone-950">{word.word}</h1>
+            {word.part_of_speech && <p className="mt-2 text-base font-bold text-teal-700">{word.part_of_speech}</p>}
           </div>
 
           <div className="flex flex-wrap items-center justify-between gap-3">
@@ -47,9 +48,30 @@ export default function WordPage() {
           </div>
 
           <div className="space-y-3">
+            {word.primary_sense && (
+              <div className="rounded-md border border-teal-100 bg-teal-50 p-4">
+                <p className="text-sm font-bold text-teal-800">Primary meaning</p>
+                <p className="mt-1 leading-8 text-stone-800">{word.primary_sense}</p>
+              </div>
+            )}
             <p className="text-lg leading-8 text-stone-700">{word.simple_definition}</p>
             <p className="rounded-md bg-stone-100 p-4 text-stone-800">{word.example_sentence}</p>
           </div>
+
+          {word.other_senses.length > 0 && (
+            <section className="space-y-3 rounded-md border border-stone-200 p-4">
+              <h2 className="text-lg font-black text-stone-950">Other common meanings</h2>
+              <div className="space-y-4">
+                {word.other_senses.map((sense, index) => (
+                  <div key={`${sense.part_of_speech}-${index}`} className="leading-7">
+                    {sense.part_of_speech && <p className="font-bold text-teal-700">{sense.part_of_speech}</p>}
+                    <p className="text-stone-800">{sense.definition}</p>
+                    {sense.example_sentence && <p className="mt-1 text-sm text-stone-600">{sense.example_sentence}</p>}
+                  </div>
+                ))}
+              </div>
+            </section>
+          )}
 
           <div className="rounded-md border border-stone-200 p-3 text-sm">
             <p className="font-bold text-stone-500">Times searched</p>

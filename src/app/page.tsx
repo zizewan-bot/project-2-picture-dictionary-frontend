@@ -116,13 +116,38 @@ export default function Home() {
             <WordImage src={result.image_url} word={result.word} />
           </div>
           <div className="space-y-4 p-5">
-            <h2 className="text-3xl font-black capitalize">{result.word}</h2>
+            <div>
+              {result.part_of_speech && (
+                <p className="text-sm font-bold uppercase tracking-wide text-teal-700">{result.part_of_speech}</p>
+              )}
+              <h2 className="mt-1 text-3xl font-black capitalize">{result.word}</h2>
+            </div>
             <div className="flex flex-wrap items-center justify-between gap-3">
               <PronunciationLine ipaUs={result.ipa_us} ipaUk={result.ipa_uk} />
               <PronunciationButton word={result.word} />
             </div>
+            {result.primary_sense && (
+              <div className="rounded-md border border-teal-100 bg-teal-50 p-3">
+                <p className="text-sm font-bold text-teal-800">Primary meaning</p>
+                <p className="mt-1 leading-7 text-stone-800">{result.primary_sense}</p>
+              </div>
+            )}
             <p className="leading-7 text-stone-700">{result.simple_definition}</p>
             <p className="rounded-md bg-stone-100 p-3 text-stone-800">{result.example_sentence}</p>
+            {result.other_senses.length > 0 && (
+              <section className="space-y-2 rounded-md border border-stone-200 p-3">
+                <h3 className="font-black text-stone-900">Other common meanings</h3>
+                <div className="space-y-3">
+                  {result.other_senses.map((sense, index) => (
+                    <div key={`${sense.part_of_speech}-${index}`} className="text-sm leading-6">
+                      {sense.part_of_speech && <p className="font-bold text-teal-700">{sense.part_of_speech}</p>}
+                      <p className="text-stone-800">{sense.definition}</p>
+                      {sense.example_sentence && <p className="mt-1 text-stone-600">{sense.example_sentence}</p>}
+                    </div>
+                  ))}
+                </div>
+              </section>
+            )}
             <div className="rounded-md border border-stone-200 p-3 text-sm">
               <p className="font-bold text-stone-500">Times searched</p>
               <p className="text-2xl font-black">{result.lookup_count}</p>
