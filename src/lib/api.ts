@@ -1,5 +1,5 @@
 export type LearningStatus = "new" | "learning" | "mastered";
-export type ImageStatus = "pending" | "generated" | "failed";
+export type ImageStatus = "pending" | "ready" | "failed";
 
 export type OtherSense = {
   part_of_speech: string;
@@ -40,6 +40,7 @@ export type WordLookup = {
   ipa_uk: string;
   pronunciation_note: string | null;
   image_url: string | null;
+  image_status: ImageStatus;
   lookup_count: number;
   learning_status: LearningStatus;
   lookup_day_id: number;

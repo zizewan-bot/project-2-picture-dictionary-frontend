@@ -21,6 +21,37 @@ export default function WordPage() {
       .finally(() => setLoading(false));
   }, [params.id]);
 
+  useEffect(() => {
+    if (word?.image_status !== "pending") {
+      return;
+    }
+
+    let attempts = 0;
+    let active = true;
+    const timer = window.setInterval(async () => {
+      attempts += 1;
+      try {
+        const refreshedWord = await getWord(params.id);
+        if (!active) {
+          return;
+        }
+        setWord(refreshedWord);
+        if (refreshedWord.image_status !== "pending" || attempts >= 30) {
+          window.clearInterval(timer);
+        }
+      } catch {
+        if (attempts >= 30) {
+          window.clearInterval(timer);
+        }
+      }
+    }, 3000);
+
+    return () => {
+      active = false;
+      window.clearInterval(timer);
+    };
+  }, [params.id, word?.image_status]);
+
   if (loading) {
     return <p className="rounded-md bg-white p-4 font-semibold">Loading word...</p>;
   }
@@ -33,7 +64,7 @@ export default function WordPage() {
     <section className="mx-auto max-w-3xl">
       <article className="overflow-hidden rounded-lg border border-stone-200 bg-white shadow-sm">
         <div className="aspect-[4/3] bg-stone-100">
-          <WordImage src={word.image_url} word={word.word} />
+          <WordImage src={word.image_url} status={word.image_status} word={word.word} />
         </div>
         <div className="space-y-5 p-5 sm:p-6">
           <div>

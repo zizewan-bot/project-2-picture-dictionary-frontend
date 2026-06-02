@@ -2,7 +2,7 @@
 
 import { FormEvent, useEffect, useState } from "react";
 
-import { searchWord, type WordLookup } from "@/lib/api";
+import { getWord, searchWord, type WordLookup } from "@/lib/api";
 import { PronunciationButton } from "@/components/PronunciationButton";
 import { PronunciationLine } from "@/components/PronunciationLine";
 import { WordImage } from "@/components/WordImage";
@@ -20,6 +20,39 @@ export default function Home() {
     }, 0);
     return () => window.clearTimeout(timer);
   }, []);
+
+  const pendingResultId = result?.image_status === "pending" ? result.id : null;
+
+  useEffect(() => {
+    if (!pendingResultId) {
+      return;
+    }
+
+    let attempts = 0;
+    let active = true;
+    const timer = window.setInterval(async () => {
+      attempts += 1;
+      try {
+        const refreshedWord = await getWord(String(pendingResultId));
+        if (!active) {
+          return;
+        }
+        setResult(refreshedWord);
+        if (refreshedWord.image_status !== "pending" || attempts >= 30) {
+          window.clearInterval(timer);
+        }
+      } catch {
+        if (attempts >= 30) {
+          window.clearInterval(timer);
+        }
+      }
+    }, 3000);
+
+    return () => {
+      active = false;
+      window.clearInterval(timer);
+    };
+  }, [pendingResultId]);
 
   function handleDemoCodeChange(value: string) {
     setDemoCode(value);
@@ -113,7 +146,7 @@ export default function Home() {
       {result && (
         <aside className="overflow-hidden rounded-lg border border-stone-200 bg-white shadow-sm">
           <div className="aspect-[4/3] bg-stone-100">
-            <WordImage src={result.image_url} word={result.word} />
+            <WordImage src={result.image_url} status={result.image_status} word={result.word} />
           </div>
           <div className="space-y-4 p-5">
             <div>
