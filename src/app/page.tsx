@@ -146,7 +146,12 @@ export default function Home() {
       {result && (
         <aside className="overflow-hidden rounded-lg border border-stone-200 bg-white shadow-sm">
           <div className="aspect-[4/3] bg-stone-100">
-            <WordImage src={result.image_url} status={result.image_status} word={result.word} />
+            <WordImage
+              src={result.image_url}
+              status={result.image_status}
+              word={result.word}
+              isAiGenerated={result.image_is_ai_generated}
+            />
           </div>
           <div className="space-y-4 p-5">
             <div>

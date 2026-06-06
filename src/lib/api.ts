@@ -22,6 +22,7 @@ export type GlobalWord = {
   image_url: string | null;
   image_public_id: string | null;
   image_status: ImageStatus;
+  image_is_ai_generated: boolean;
   image_prompt: string;
   image_style_version: string;
   created_at: string;
@@ -41,6 +42,7 @@ export type WordLookup = {
   pronunciation_note: string | null;
   image_url: string | null;
   image_status: ImageStatus;
+  image_is_ai_generated: boolean;
   lookup_count: number;
   learning_status: LearningStatus;
   lookup_day_id: number;
@@ -77,6 +79,7 @@ export type WordSummary = {
   ipa_uk: string;
   image_url: string | null;
   image_status: ImageStatus;
+  image_is_ai_generated: boolean;
   total_lookup_count: number;
   last_searched_at: string | null;
   latest_word_lookup_id: number | null;

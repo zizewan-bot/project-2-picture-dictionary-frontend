@@ -64,7 +64,12 @@ export default function WordPage() {
     <section className="mx-auto max-w-3xl">
       <article className="overflow-hidden rounded-lg border border-stone-200 bg-white shadow-sm">
         <div className="aspect-[4/3] bg-stone-100">
-          <WordImage src={word.image_url} status={word.image_status} word={word.word} />
+          <WordImage
+            src={word.image_url}
+            status={word.image_status}
+            word={word.word}
+            isAiGenerated={word.image_is_ai_generated}
+          />
         </div>
         <div className="space-y-5 p-5 sm:p-6">
           <div>
