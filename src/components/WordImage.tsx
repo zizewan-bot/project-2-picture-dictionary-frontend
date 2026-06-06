@@ -18,8 +18,13 @@ export function WordImage({ src, word, status = "ready", isAiGenerated = true, c
 
   if (status === "pending") {
     return (
-      <div className={`flex h-full w-full flex-col items-center justify-center bg-teal-50 p-6 text-center ${className}`}>
-        <p className="text-lg font-black text-teal-900">You found a new word!</p>
+      <div
+        className={`flex h-full w-full flex-col items-center justify-center bg-teal-50 p-6 text-center ${className}`}
+        role="status"
+        aria-label={`AI-generated learning picture for ${word} is being created`}
+      >
+        <div className="h-9 w-9 animate-spin rounded-full border-4 border-teal-200 border-t-teal-700" aria-hidden="true" />
+        <p className="mt-3 text-lg font-black text-teal-900">You found a new word!</p>
         <p className="mt-2 max-w-sm text-sm leading-6 text-teal-800">AI-generated picture is being created.</p>
       </div>
     );
