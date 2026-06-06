@@ -20,9 +20,7 @@ export function WordImage({ src, word, status = "ready", isAiGenerated = true, c
     return (
       <div className={`flex h-full w-full flex-col items-center justify-center bg-teal-50 p-6 text-center ${className}`}>
         <p className="text-lg font-black text-teal-900">You found a new word!</p>
-        <p className="mt-2 max-w-sm text-sm leading-6 text-teal-800">
-          We&apos;re creating its first AI-generated picture now.
-        </p>
+        <p className="mt-2 max-w-sm text-sm leading-6 text-teal-800">AI-generated picture is being created.</p>
       </div>
     );
   }
@@ -31,7 +29,7 @@ export function WordImage({ src, word, status = "ready", isAiGenerated = true, c
     return (
       <div className={`flex h-full w-full flex-col items-center justify-center bg-stone-100 p-6 text-center ${className}`}>
         <p className="max-w-sm text-sm font-bold leading-6 text-stone-700">
-          The word is ready, but the AI-generated picture is not available right now.
+          AI-generated picture is not available right now.
         </p>
       </div>
     );
