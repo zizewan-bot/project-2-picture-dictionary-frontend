@@ -3,7 +3,7 @@
 /* eslint-disable @next/next/no-img-element */
 import { useState } from "react";
 
-import type { ImageStatus } from "@/lib/api";
+import type { ImageFeedbackValue, ImageStatus } from "@/lib/api";
 
 type WordImageProps = {
   src?: string | null;
@@ -13,6 +13,10 @@ type WordImageProps = {
   isRetrying?: boolean;
   retryMessage?: string | null;
   onRetry?: () => void;
+  currentFeedback?: ImageFeedbackValue | null;
+  isSubmittingFeedback?: boolean;
+  feedbackMessage?: string | null;
+  onFeedback?: (feedback: ImageFeedbackValue) => void;
   className?: string;
 };
 
@@ -24,6 +28,10 @@ export function WordImage({
   isRetrying = false,
   retryMessage,
   onRetry,
+  currentFeedback,
+  isSubmittingFeedback = false,
+  feedbackMessage,
+  onFeedback,
   className = "",
 }: WordImageProps) {
   const [failed, setFailed] = useState(false);
@@ -64,6 +72,13 @@ export function WordImage({
     );
   }
 
+  const feedbackButtonClass = (feedback: ImageFeedbackValue) =>
+    `inline-flex min-h-9 items-center justify-center rounded-md border px-3 text-xs font-bold transition disabled:cursor-not-allowed disabled:opacity-60 ${
+      currentFeedback === feedback
+        ? "border-teal-700 bg-teal-700 text-white"
+        : "border-stone-300 bg-white text-stone-700 hover:border-teal-600"
+    }`;
+
   return (
     <figure
       className={`relative h-full w-full ${className}`}
@@ -82,6 +97,32 @@ export function WordImage({
           <span className="absolute right-2 top-2 rounded-full bg-stone-950/70 px-2 py-1 text-xs font-black text-white">
             AI
           </span>
+          {onFeedback && status === "ready" && src && !failed && (
+            <div className="absolute bottom-2 left-2 right-2 rounded-md bg-white/92 p-2 shadow-sm backdrop-blur">
+              <p className="text-xs font-bold text-stone-600">How is this picture?</p>
+              <div className="mt-2 flex flex-wrap gap-2">
+                <button
+                  type="button"
+                  onClick={() => onFeedback("like")}
+                  disabled={isSubmittingFeedback}
+                  className={feedbackButtonClass("like")}
+                  aria-pressed={currentFeedback === "like"}
+                >
+                  Like
+                </button>
+                <button
+                  type="button"
+                  onClick={() => onFeedback("not_a_good_picture")}
+                  disabled={isSubmittingFeedback}
+                  className={feedbackButtonClass("not_a_good_picture")}
+                  aria-pressed={currentFeedback === "not_a_good_picture"}
+                >
+                  Not a good picture
+                </button>
+              </div>
+              {feedbackMessage && <p className="mt-2 text-xs leading-5 text-stone-600">{feedbackMessage}</p>}
+            </div>
+          )}
           <figcaption className="sr-only">AI-generated learning picture</figcaption>
         </>
       )}

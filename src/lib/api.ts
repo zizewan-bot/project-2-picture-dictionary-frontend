@@ -1,5 +1,6 @@
 export type LearningStatus = "new" | "learning" | "mastered";
 export type ImageStatus = "pending" | "ready" | "failed";
+export type ImageFeedbackValue = "like" | "not_a_good_picture";
 
 export type OtherSense = {
   part_of_speech: string;
@@ -23,6 +24,11 @@ export type GlobalWord = {
   image_public_id: string | null;
   image_status: ImageStatus;
   image_is_ai_generated: boolean;
+  image_like_count?: number;
+  image_dislike_count?: number;
+  total_feedback_count?: number;
+  dislike_ratio?: number;
+  replacement_candidate?: boolean;
   image_prompt: string;
   image_style_version: string;
   created_at: string;
@@ -47,6 +53,12 @@ export type WordLookup = {
   retry_scheduled?: boolean;
   retry_message?: string | null;
   next_retry_after?: string | null;
+  image_like_count?: number;
+  image_dislike_count?: number;
+  total_feedback_count?: number;
+  dislike_ratio?: number;
+  replacement_candidate?: boolean;
+  current_feedback?: ImageFeedbackValue | null;
   lookup_count: number;
   learning_status: LearningStatus;
   lookup_day_id: number;
@@ -142,6 +154,14 @@ export function getWord(id: string) {
 export function retryWordImage(id: string, demoCode?: string) {
   return request<WordLookup>(`/words/${id}/image-retry`, {
     method: "POST",
+    headers: demoCode ? { "X-Demo-Code": demoCode } : undefined,
+  });
+}
+
+export function submitWordImageFeedback(id: string, feedback: ImageFeedbackValue, demoCode?: string) {
+  return request<WordLookup>(`/words/${id}/image-feedback`, {
+    method: "POST",
+    body: JSON.stringify({ feedback }),
     headers: demoCode ? { "X-Demo-Code": demoCode } : undefined,
   });
 }

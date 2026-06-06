@@ -2,7 +2,7 @@
 
 import { FormEvent, useEffect, useState } from "react";
 
-import { getWord, retryWordImage, searchWord, type WordLookup } from "@/lib/api";
+import { getWord, retryWordImage, searchWord, submitWordImageFeedback, type ImageFeedbackValue, type WordLookup } from "@/lib/api";
 import { PronunciationButton } from "@/components/PronunciationButton";
 import { PronunciationLine } from "@/components/PronunciationLine";
 import { WordImage } from "@/components/WordImage";
@@ -12,8 +12,10 @@ export default function Home() {
   const [result, setResult] = useState<WordLookup | null>(null);
   const [loading, setLoading] = useState(false);
   const [retryingImage, setRetryingImage] = useState(false);
+  const [submittingFeedback, setSubmittingFeedback] = useState(false);
   const [error, setError] = useState("");
   const [imageRetryMessage, setImageRetryMessage] = useState("");
+  const [imageFeedbackMessage, setImageFeedbackMessage] = useState("");
   const [demoCode, setDemoCode] = useState("");
 
   useEffect(() => {
@@ -65,6 +67,7 @@ export default function Home() {
     event.preventDefault();
     setError("");
     setImageRetryMessage("");
+    setImageFeedbackMessage("");
     setResult(null);
     setLoading(true);
     try {
@@ -98,6 +101,23 @@ export default function Home() {
       setImageRetryMessage(caughtError instanceof Error ? caughtError.message : "Please try again later.");
     } finally {
       setRetryingImage(false);
+    }
+  }
+
+  async function handleImageFeedback(feedback: ImageFeedbackValue) {
+    if (!result || submittingFeedback) {
+      return;
+    }
+
+    setSubmittingFeedback(true);
+    setImageFeedbackMessage("");
+    try {
+      const refreshedWord = await submitWordImageFeedback(String(result.id), feedback, demoCode.trim());
+      setResult(refreshedWord);
+    } catch (caughtError) {
+      setImageFeedbackMessage(caughtError instanceof Error ? caughtError.message : "Please try again later.");
+    } finally {
+      setSubmittingFeedback(false);
     }
   }
 
@@ -175,6 +195,10 @@ export default function Home() {
               isRetrying={retryingImage}
               retryMessage={imageRetryMessage}
               onRetry={result.image_status === "failed" ? handleRetryImage : undefined}
+              currentFeedback={result.current_feedback}
+              isSubmittingFeedback={submittingFeedback}
+              feedbackMessage={imageFeedbackMessage}
+              onFeedback={result.image_status === "ready" && result.image_url ? handleImageFeedback : undefined}
             />
           </div>
           <div className="space-y-4 p-5">

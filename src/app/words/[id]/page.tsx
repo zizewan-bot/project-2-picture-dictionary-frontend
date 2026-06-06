@@ -6,14 +6,16 @@ import { useEffect, useState } from "react";
 import { PronunciationButton } from "@/components/PronunciationButton";
 import { PronunciationLine } from "@/components/PronunciationLine";
 import { WordImage } from "@/components/WordImage";
-import { getWord, retryWordImage, type WordLookup } from "@/lib/api";
+import { getWord, retryWordImage, submitWordImageFeedback, type ImageFeedbackValue, type WordLookup } from "@/lib/api";
 
 export default function WordPage() {
   const params = useParams<{ id: string }>();
   const [word, setWord] = useState<WordLookup | null>(null);
   const [loading, setLoading] = useState(true);
   const [retryingImage, setRetryingImage] = useState(false);
+  const [submittingFeedback, setSubmittingFeedback] = useState(false);
   const [imageRetryMessage, setImageRetryMessage] = useState("");
+  const [imageFeedbackMessage, setImageFeedbackMessage] = useState("");
   const [error, setError] = useState("");
 
   useEffect(() => {
@@ -73,6 +75,24 @@ export default function WordPage() {
     }
   }
 
+  async function handleImageFeedback(feedback: ImageFeedbackValue) {
+    if (submittingFeedback) {
+      return;
+    }
+
+    setSubmittingFeedback(true);
+    setImageFeedbackMessage("");
+    const demoCode = window.localStorage.getItem("pictureDictionaryDemoCode") ?? "";
+    try {
+      const refreshedWord = await submitWordImageFeedback(params.id, feedback, demoCode.trim());
+      setWord(refreshedWord);
+    } catch (caughtError) {
+      setImageFeedbackMessage(caughtError instanceof Error ? caughtError.message : "Please try again later.");
+    } finally {
+      setSubmittingFeedback(false);
+    }
+  }
+
   if (loading) {
     return <p className="rounded-md bg-white p-4 font-semibold">Loading word...</p>;
   }
@@ -93,6 +113,10 @@ export default function WordPage() {
             isRetrying={retryingImage}
             retryMessage={imageRetryMessage}
             onRetry={word.image_status === "failed" ? handleRetryImage : undefined}
+            currentFeedback={word.current_feedback}
+            isSubmittingFeedback={submittingFeedback}
+            feedbackMessage={imageFeedbackMessage}
+            onFeedback={word.image_status === "ready" && word.image_url ? handleImageFeedback : undefined}
           />
         </div>
         <div className="space-y-5 p-5 sm:p-6">
