@@ -43,6 +43,10 @@ export type WordLookup = {
   image_url: string | null;
   image_status: ImageStatus;
   image_is_ai_generated: boolean;
+  image_retryable?: boolean;
+  retry_scheduled?: boolean;
+  retry_message?: string | null;
+  next_retry_after?: string | null;
   lookup_count: number;
   learning_status: LearningStatus;
   lookup_day_id: number;
@@ -133,6 +137,13 @@ export function getDay(date: string) {
 
 export function getWord(id: string) {
   return request<WordLookup>(`/words/${id}`, { cache: "no-store" });
+}
+
+export function retryWordImage(id: string, demoCode?: string) {
+  return request<WordLookup>(`/words/${id}/image-retry`, {
+    method: "POST",
+    headers: demoCode ? { "X-Demo-Code": demoCode } : undefined,
+  });
 }
 
 export function getWordSummary() {

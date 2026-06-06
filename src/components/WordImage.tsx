@@ -10,10 +10,22 @@ type WordImageProps = {
   word: string;
   status?: ImageStatus;
   isAiGenerated?: boolean;
+  isRetrying?: boolean;
+  retryMessage?: string | null;
+  onRetry?: () => void;
   className?: string;
 };
 
-export function WordImage({ src, word, status = "ready", isAiGenerated = true, className = "" }: WordImageProps) {
+export function WordImage({
+  src,
+  word,
+  status = "ready",
+  isAiGenerated = true,
+  isRetrying = false,
+  retryMessage,
+  onRetry,
+  className = "",
+}: WordImageProps) {
   const [failed, setFailed] = useState(false);
 
   if (status === "pending") {
@@ -36,6 +48,18 @@ export function WordImage({ src, word, status = "ready", isAiGenerated = true, c
         <p className="max-w-sm text-sm font-bold leading-6 text-stone-700">
           AI-generated picture is not available right now.
         </p>
+        {onRetry && status === "failed" && (
+          <button
+            type="button"
+            onClick={onRetry}
+            disabled={isRetrying}
+            className="mt-4 inline-flex min-h-10 items-center justify-center rounded-md bg-teal-700 px-4 text-sm font-bold text-white transition hover:bg-teal-800 disabled:cursor-not-allowed disabled:bg-stone-300"
+            aria-label={`Try creating the AI-generated picture for ${word} again`}
+          >
+            {isRetrying ? "Trying again..." : "Try again"}
+          </button>
+        )}
+        {retryMessage && <p className="mt-3 max-w-sm text-xs leading-5 text-stone-600">{retryMessage}</p>}
       </div>
     );
   }

@@ -2,7 +2,7 @@
 
 import { FormEvent, useEffect, useState } from "react";
 
-import { getWord, searchWord, type WordLookup } from "@/lib/api";
+import { getWord, retryWordImage, searchWord, type WordLookup } from "@/lib/api";
 import { PronunciationButton } from "@/components/PronunciationButton";
 import { PronunciationLine } from "@/components/PronunciationLine";
 import { WordImage } from "@/components/WordImage";
@@ -11,7 +11,9 @@ export default function Home() {
   const [word, setWord] = useState("");
   const [result, setResult] = useState<WordLookup | null>(null);
   const [loading, setLoading] = useState(false);
+  const [retryingImage, setRetryingImage] = useState(false);
   const [error, setError] = useState("");
+  const [imageRetryMessage, setImageRetryMessage] = useState("");
   const [demoCode, setDemoCode] = useState("");
 
   useEffect(() => {
@@ -62,6 +64,7 @@ export default function Home() {
   async function handleSearch(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setError("");
+    setImageRetryMessage("");
     setResult(null);
     setLoading(true);
     try {
@@ -77,6 +80,24 @@ export default function Home() {
       }
     } finally {
       setLoading(false);
+    }
+  }
+
+  async function handleRetryImage() {
+    if (!result || retryingImage) {
+      return;
+    }
+
+    setRetryingImage(true);
+    setImageRetryMessage("");
+    try {
+      const refreshedWord = await retryWordImage(String(result.id), demoCode.trim());
+      setResult(refreshedWord);
+      setImageRetryMessage(refreshedWord.retry_message ?? "");
+    } catch (caughtError) {
+      setImageRetryMessage(caughtError instanceof Error ? caughtError.message : "Please try again later.");
+    } finally {
+      setRetryingImage(false);
     }
   }
 
@@ -151,6 +172,9 @@ export default function Home() {
               status={result.image_status}
               word={result.word}
               isAiGenerated={result.image_is_ai_generated}
+              isRetrying={retryingImage}
+              retryMessage={imageRetryMessage}
+              onRetry={result.image_status === "failed" ? handleRetryImage : undefined}
             />
           </div>
           <div className="space-y-4 p-5">

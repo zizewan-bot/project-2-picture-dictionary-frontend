@@ -6,12 +6,14 @@ import { useEffect, useState } from "react";
 import { PronunciationButton } from "@/components/PronunciationButton";
 import { PronunciationLine } from "@/components/PronunciationLine";
 import { WordImage } from "@/components/WordImage";
-import { getWord, type WordLookup } from "@/lib/api";
+import { getWord, retryWordImage, type WordLookup } from "@/lib/api";
 
 export default function WordPage() {
   const params = useParams<{ id: string }>();
   const [word, setWord] = useState<WordLookup | null>(null);
   const [loading, setLoading] = useState(true);
+  const [retryingImage, setRetryingImage] = useState(false);
+  const [imageRetryMessage, setImageRetryMessage] = useState("");
   const [error, setError] = useState("");
 
   useEffect(() => {
@@ -52,6 +54,25 @@ export default function WordPage() {
     };
   }, [params.id, word?.image_status]);
 
+  async function handleRetryImage() {
+    if (retryingImage) {
+      return;
+    }
+
+    setRetryingImage(true);
+    setImageRetryMessage("");
+    const demoCode = window.localStorage.getItem("pictureDictionaryDemoCode") ?? "";
+    try {
+      const refreshedWord = await retryWordImage(params.id, demoCode.trim());
+      setWord(refreshedWord);
+      setImageRetryMessage(refreshedWord.retry_message ?? "");
+    } catch (caughtError) {
+      setImageRetryMessage(caughtError instanceof Error ? caughtError.message : "Please try again later.");
+    } finally {
+      setRetryingImage(false);
+    }
+  }
+
   if (loading) {
     return <p className="rounded-md bg-white p-4 font-semibold">Loading word...</p>;
   }
@@ -69,6 +90,9 @@ export default function WordPage() {
             status={word.image_status}
             word={word.word}
             isAiGenerated={word.image_is_ai_generated}
+            isRetrying={retryingImage}
+            retryMessage={imageRetryMessage}
+            onRetry={word.image_status === "failed" ? handleRetryImage : undefined}
           />
         </div>
         <div className="space-y-5 p-5 sm:p-6">
